@@ -1,0 +1,13 @@
+{
+    "editor.formatOnSave": true,
+    "[cpp]": {
+        "editor.defaultFormatter": "xaver.clang-format"
+    },
+    "[c]": {
+        "editor.defaultFormatter": "xaver.clang-format"
+    },
+    "[cmake]": {
+        "editor.defaultFormatter": null
+    },
+    "C_Cpp.autoAddFileAssociations": false
+}

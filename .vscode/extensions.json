@@ -1,0 +1,25 @@
+{
+	// See https://go.microsoft.com/fwlink/?LinkId=827846 to learn about workspace recommendations.
+	// Extension identifier format: ${publisher}.${name}. Example: vscode.csharp
+	// List of extensions which should be recommended for users of this workspace.
+	"recommendations": [
+		"ms-vscode.cpptools-extension-pack",
+        "josetr.cmake-language-support-vscode", // cmake intellisense
+		"ms-azure-devops.azure-pipelines",
+		"marus25.cortex-debug",
+		"xaver.clang-format",
+		"cschlosser.doxdocgen",
+		"hbenl.vscode-test-explorer",
+		"matepek.vscode-catch2-test-adapter",
+        "yzhang.markdown-all-in-one", // extra markdown support
+		"DavidAnson.vscode-markdownlint", // Markdown Linter
+        "EditorConfig.EditorConfig",
+        "eamodio.gitlens",
+        "trond-snekvik.gnu-mapfiles",
+        "cheshirekow.cmake-format"
+	],
+	// List of extensions recommended by VS Code that should not be recommended for users of this workspace.
+	"unwantedRecommendations": [
+        "twxs.cmake" // disable CMake Tools default intellisense and use a preferred intellisense instead
+    ]
+}

@@ -1,0 +1,38 @@
+########################################################################
+#                  Baseline Text Editor Configuration
+#
+# See <https://editorconfig.org/> for more information. Your editor
+# almost certainly has either built-in support for this file, or a
+# blessed plugin that can understand it. Formatting according to this
+# file generally occurs on save, and external formatters such as code
+# transformers generally do not read it but also generally do not
+# produce edits that interfere with it.
+#
+# Rules are grouped by filepath glob, and *may not* contain inline
+# comments.
+########################################################################
+
+[*]
+charset = utf-8
+end_of_line = crlf
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Place language- or format- specific rules here.
+
+# You may also place other .editorconfig files deeper in the directory
+# structure. Deeper files inherit from, and selectively override,
+# shallower.
+
+[{CMakeLists.txt,*.cmake}]
+indent_size = 4
+
+[*.{c,h}{,pp}]
+indent_size = 4
+
+[*.json]
+indent_size = 4
+
+[*.y{,a}ml]
+indent_size = 2
