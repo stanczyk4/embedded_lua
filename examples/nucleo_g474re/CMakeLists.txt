@@ -14,8 +14,6 @@ target_link_options (
     ${PROJECT_NAME} PUBLIC -T ${CMAKE_CURRENT_LIST_DIR}/stm32cubemx/STM32G474RETx_FLASH.ld
 )
 
-set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${PROJECT_NAME}.elf)
-
 target_link_libraries (${PROJECT_NAME} segger_rtt_interface)
 
 # Override hal_conf.h that the hal defaults to using
