@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 3.23)
 
-target_include_directories (embedded_lua PUBLIC ${HAL_9000_INCLUDE}/vendor/stm32/stm32g4)
+target_include_directories (${PROJECT_NAME} PUBLIC ${HAL_9000_INCLUDE}/vendor/stm32/stm32g4)
 
 set (
     FREERTOS_ARCHITECTURE
@@ -34,10 +34,10 @@ set (HAL_9000_STM32_WWATCHDOG_SUPPORTED TRUE)
 cpmaddpackage ("gh:STMicroelectronics/STM32CubeG4#v1.5.1")
 
 set (STM32G4_DRIVER_PATH ${CPM_PACKAGE_STM32CubeG4_SOURCE_DIR}/Drivers/STM32G4xx_HAL_Driver)
-target_compile_definitions (embedded_lua PUBLIC CMSIS_device_header="stm32g4xx.h" HAL_INTERRUPT_HANDLERS_COUNT=110)
+target_compile_definitions (${PROJECT_NAME} PUBLIC CMSIS_device_header="stm32g4xx.h" HAL_INTERRUPT_HANDLERS_COUNT=110)
 
-# embedded_lua Source Files
-list(APPEND HAL_9000_EXTERNAL_FILES
+# ${PROJECT_NAME} Source Files
+list(APPEND STM32_SOURCE_FILES
     ${STM32G4_DRIVER_PATH}/Src/stm32g4xx_hal_adc_ex.c
     ${STM32G4_DRIVER_PATH}/Src/stm32g4xx_hal_adc.c
     ${STM32G4_DRIVER_PATH}/Src/stm32g4xx_hal_comp.c
@@ -101,7 +101,7 @@ list(APPEND HAL_9000_EXTERNAL_FILES
 )
 
 # Low Level Source files
-list(APPEND HAL_9000_EXTERNAL_FILES
+list(APPEND STM32_SOURCE_FILES
     ${STM32G4_DRIVER_PATH}/Src/stm32g4xx_ll_adc.c
     ${STM32G4_DRIVER_PATH}/Src/stm32g4xx_ll_comp.c
     ${STM32G4_DRIVER_PATH}/Src/stm32g4xx_ll_cordic.c
@@ -131,12 +131,12 @@ list(APPEND HAL_9000_EXTERNAL_FILES
 )
 
 if (HAL_9000_COMPILE_SYSTEM_FILE)
-    list(APPEND HAL_9000_EXTERNAL_FILES
+    list(APPEND STM32_SOURCE_FILES
         ${CPM_PACKAGE_STM32CubeG4_SOURCE_DIR}/Drivers/CMSIS/Device/ST/STM32G4xx/Source/Templates/system_stm32g4xx.c
     )
 endif ()
 
-target_include_directories (embedded_lua PUBLIC 
+target_include_directories (${PROJECT_NAME} PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}
     ${CPM_PACKAGE_STM32CubeG4_SOURCE_DIR}/Drivers/CMSIS/Include
     ${CPM_PACKAGE_STM32CubeG4_SOURCE_DIR}/Drivers/CMSIS/Core/Include
@@ -162,11 +162,11 @@ if (NOT HAL_9000_DONT_COMPILE_STARTUP_FILE)
         )
     endif ()
 
-        list(APPEND HAL_9000_EXTERNAL_FILES ${HAL_9000_CMSIS_BASE_FOLDER}/startup_stm32g474xx.s)
+        list(APPEND STM32_SOURCE_FILES ${HAL_9000_CMSIS_BASE_FOLDER}/startup_stm32g474xx.s)
 else ()
     message ("HAL_9000_DONT_COMPILE_STARTUP_FILE defined, user is expected to compile startup files")
 endif ()
 
-set(HAL_9000_EXTERNAL_FILES ${HAL_9000_EXTERNAL_FILES} CACHE INTERNAL "HAL_9000_EXTERNAL_FILES")
+set(STM32_SOURCE_FILES ${STM32_SOURCE_FILES} CACHE INTERNAL "STM32_SOURCE_FILES")
 
-target_sources (embedded_lua PRIVATE ${HAL_9000_EXTERNAL_FILES})
+target_sources (${PROJECT_NAME} PRIVATE ${STM32_SOURCE_FILES})

@@ -2,13 +2,15 @@ cmake_minimum_required(VERSION 3.26)
 
 CPMAddPackage (
     NAME Lua
-    GITHUB_REPOSITORY "https://github.com/lua/lua"
+    GIT_REPOSITORY "https://github.com/lua/lua"
     GIT_TAG v5.4.7
     EXCLUDE_FROM_ALL TRUE
     DOWNLOAD_ONLY TRUE
 )
 
-add_library(lua-lib STATIC
+set(LUA_SOURCE_DIR ${CPM_PACKAGE_Lua_SOURCE_DIR})
+
+add_library(lua STATIC
     "${LUA_SOURCE_DIR}/lapi.c"
     "${LUA_SOURCE_DIR}/lcode.c"
     "${LUA_SOURCE_DIR}/lctype.c"
@@ -43,59 +45,12 @@ add_library(lua-lib STATIC
     "${LUA_SOURCE_DIR}/linit.c"
 )
 
-target_include_directories(lua-lib PUBLIC ${LUA_SOURCE_DIR})
-target_compile_definitions(lua-lib PUBLIC "-DLUA_32BITS")
+target_include_directories(lua PUBLIC ${LUA_SOURCE_DIR})
 
 if(UNIX)
     find_library(LIB_MATH NAMES m)
     if(LIB_MATH)
-      target_link_libraries(lua-lib PUBLIC ${LIB_MATH})
+      target_link_libraries(lua PUBLIC ${LIB_MATH})
     endif()
     mark_as_advanced(LIB_MATH)
 endif()
-
-# install
-install(
-  FILES ${_LUA_SOURCE_DIR}/lualib.h ${_LUA_SOURCE_DIR}/lua.h
-        ${_LUA_SOURCE_DIR}/luaconf.h ${_LUA_SOURCE_DIR}/lauxlib.h
-  DESTINATION include
-  COMPONENT dev)
-
-# when compiling as c++, skip the `extern "C"` wrapper
-if(NOT LUA_COMPILE_AS_CPP)
-  install(
-    FILES ${_LUA_SOURCE_DIR}/lua.hpp
-    DESTINATION include
-    COMPONENT dev)
-endif()
-
-include(GNUInstallDirs)
-install(
-  TARGETS lua
-  EXPORT Lua-targets
-  COMPONENT dev
-  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
-
-include(CMakePackageConfigHelpers)
-set(_LuaCMakePath "${CMAKE_CURRENT_BINARY_DIR}/cmake/${_Lua}")
-set(_LuaVersionFile "${_LuaCMakePath}/${_Lua}-config-version.cmake")
-write_basic_package_version_file(
-  ${_LuaVersionFile}
-  VERSION ${PROJECT_VERSION}
-  COMPATIBILITY SameMajorVersion)
-
-set(_LuaConfigFile "${_LuaCMakePath}/${_Lua}-config.cmake")
-configure_package_config_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/cmake/${_Lua}-config.cmake.in ${_LuaConfigFile}
-  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${_Lua})
-
-install(
-  EXPORT ${_Lua}-targets
-  FILE ${_Lua}-targets.cmake
-  NAMESPACE ${_Lua}::
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${_Lua})
-
-install(FILES ${_LuaVersionFile} ${_LuaConfigFile}
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${_Lua})

@@ -7,7 +7,7 @@ add_executable(${PROJECT_NAME}
     common/sys.cpp
 )
 
-target_link_libraries(${PROJECT_NAME} lua-lib)
+target_link_libraries(${PROJECT_NAME} embedded_lua)
 
 add_subdirectory(nucleo_g474re)
 
