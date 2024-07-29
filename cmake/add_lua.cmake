@@ -56,3 +56,14 @@ if(UNIX)
 endif()
 
 target_compile_options(lua PRIVATE "-Os")
+
+# Specify the file to be removed
+set(LUA_CONF_FILE "${LUA_SOURCE_DIR}/luaconf.h")
+
+# Remove the file after the download
+add_custom_target(remove_lua_conf ALL
+    COMMAND ${CMAKE_COMMAND} -E remove ${LUA_CONF_FILE}
+    COMMENT "Removing unnecessary file from Lua package"
+)
+
+add_dependencies(lua remove_lua_conf)
