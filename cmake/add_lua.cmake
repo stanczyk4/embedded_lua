@@ -54,3 +54,5 @@ if(UNIX)
     endif()
     mark_as_advanced(LIB_MATH)
 endif()
+
+target_compile_options(lua PRIVATE "-Os")
