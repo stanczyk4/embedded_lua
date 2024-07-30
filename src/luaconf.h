@@ -102,20 +102,13 @@
 ** compliant with C99, which may not have support for 'long long').
 */
 
-/* predefined options for LUA_INT_TYPE */
-#define LUA_INT_INT      1
-#define LUA_INT_LONG     2
-#define LUA_INT_LONGLONG 3
-
-/* predefined options for LUA_FLOAT_TYPE */
-#define LUA_FLOAT_FLOAT      1
-#define LUA_FLOAT_DOUBLE     2
-#define LUA_FLOAT_LONGDOUBLE 3
+#define LUA_INT_INT     1
+#define LUA_FLOAT_FLOAT 1
 
 
 /* Default configuration ('long long' and 'double', for 64-bit Lua) */
-#define LUA_INT_DEFAULT   LUA_INT_LONGLONG
-#define LUA_FLOAT_DEFAULT LUA_FLOAT_DOUBLE
+#define LUA_INT_DEFAULT   LUA_INT_INT
+#define LUA_FLOAT_DEFAULT LUA_FLOAT_FLOAT
 
 
 /*
@@ -123,45 +116,10 @@
 */
 #define LUA_32BITS 1
 
-
-/*
-@@ LUA_C89_NUMBERS ensures that Lua uses the largest types available for
-** C89 ('long' and 'double'); Windows always has '__int64', so it does
-** not need to use this case.
-*/
-#if defined(LUA_USE_C89) && !defined(LUA_USE_WINDOWS)
-#define LUA_C89_NUMBERS 1
-#else
 #define LUA_C89_NUMBERS 0
-#endif
 
-
-#if LUA_32BITS /* { */
-/*
-** 32-bit integers and 'float'
-*/
-#if LUAI_IS32INT /* use 'int' if big enough */
-#define LUA_INT_TYPE LUA_INT_INT
-#else /* otherwise use 'long' */
-#define LUA_INT_TYPE LUA_INT_LONG
-#endif
+#define LUA_INT_TYPE   LUA_INT_INT
 #define LUA_FLOAT_TYPE LUA_FLOAT_FLOAT
-
-#elif LUA_C89_NUMBERS /* }{ */
-/*
-** largest types available for C89 ('long' and 'double')
-*/
-#define LUA_INT_TYPE   LUA_INT_LONG
-#define LUA_FLOAT_TYPE LUA_FLOAT_DOUBLE
-
-#else /* }{ */
-/* use defaults */
-
-#define LUA_INT_TYPE   LUA_INT_DEFAULT
-#define LUA_FLOAT_TYPE LUA_FLOAT_DEFAULT
-
-#endif /* } */
-
 
 /* }================================================================== */
 
@@ -221,9 +179,9 @@
 
 #else /* }{ */
 
-#define LUA_ROOT "/usr/local/"
-#define LUA_LDIR LUA_ROOT "share/lua/" LUA_VDIR "/"
-#define LUA_CDIR LUA_ROOT "lib/lua/" LUA_VDIR "/"
+#define LUA_ROOT "/"
+#define LUA_LDIR LUA_ROOT
+#define LUA_CDIR LUA_ROOT
 
 #if !defined(LUA_PATH_DEFAULT)
 #define LUA_PATH_DEFAULT                                                \
@@ -330,66 +288,6 @@
 #define LUAI_DDEC(dec) LUAI_FUNC dec
 #define LUAI_DDEF      /* empty */
 
-/* }================================================================== */
-
-
-/*
-** {==================================================================
-** Compatibility with previous versions
-** ===================================================================
-*/
-
-/*
-@@ LUA_COMPAT_5_3 controls other macros for compatibility with Lua 5.3.
-** You can define it to get all options, or change specific options
-** to fit your specific needs.
-*/
-#if defined(LUA_COMPAT_5_3) /* { */
-
-/*
-@@ LUA_COMPAT_MATHLIB controls the presence of several deprecated
-** functions in the mathematical library.
-** (These functions were already officially removed in 5.3;
-** nevertheless they are still available here.)
-*/
-#define LUA_COMPAT_MATHLIB
-
-/*
-@@ LUA_COMPAT_APIINTCASTS controls the presence of macros for
-** manipulating other integer types (lua_pushunsigned, lua_tounsigned,
-** luaL_checkint, luaL_checklong, etc.)
-** (These macros were also officially removed in 5.3, but they are still
-** available here.)
-*/
-#define LUA_COMPAT_APIINTCASTS
-
-
-/*
-@@ LUA_COMPAT_LT_LE controls the emulation of the '__le' metamethod
-** using '__lt'.
-*/
-#define LUA_COMPAT_LT_LE
-
-
-/*
-@@ The following macros supply trivial compatibility for some
-** changes in the API. The macros themselves document how to
-** change your code to avoid using them.
-** (Once more, these macros were officially removed in 5.3, but they are
-** still available here.)
-*/
-#define lua_strlen(L, i) lua_rawlen(L, (i))
-
-#define lua_objlen(L, i) lua_rawlen(L, (i))
-
-#define lua_equal(L, idx1, idx2)    lua_compare(L, (idx1), (idx2), LUA_OPEQ)
-#define lua_lessthan(L, idx1, idx2) lua_compare(L, (idx1), (idx2), LUA_OPLT)
-
-#endif /* } */
-
-/* }================================================================== */
-
-
 /*
 ** {==================================================================
 ** Configuration for Numbers (low-level part).
@@ -448,41 +346,6 @@
 
 #define lua_str2number(s, p) strtof((s), (p))
 
-
-#elif LUA_FLOAT_TYPE == LUA_FLOAT_LONGDOUBLE /* }{ long double */
-
-#define LUA_NUMBER long double
-
-#define l_floatatt(n) (LDBL_##n)
-
-#define LUAI_UACNUMBER long double
-
-#define LUA_NUMBER_FRMLEN "L"
-#define LUA_NUMBER_FMT    "%.19Lg"
-
-#define l_mathop(op) op##l
-
-#define lua_str2number(s, p) strtold((s), (p))
-
-#elif LUA_FLOAT_TYPE == LUA_FLOAT_DOUBLE /* }{ double */
-
-#define LUA_NUMBER double
-
-#define l_floatatt(n) (DBL_##n)
-
-#define LUAI_UACNUMBER double
-
-#define LUA_NUMBER_FRMLEN ""
-#define LUA_NUMBER_FMT    "%.14g"
-
-#define l_mathop(op) op
-
-#define lua_str2number(s, p) strtod((s), (p))
-
-#else /* }{ */
-
-#error "numeric float type not defined"
-
 #endif /* } */
 
 
@@ -525,53 +388,6 @@
 #define LUA_MININTEGER INT_MIN
 
 #define LUA_MAXUNSIGNED UINT_MAX
-
-#elif LUA_INT_TYPE == LUA_INT_LONG /* }{ long */
-
-#define LUA_INTEGER        long
-#define LUA_INTEGER_FRMLEN "l"
-
-#define LUA_MAXINTEGER LONG_MAX
-#define LUA_MININTEGER LONG_MIN
-
-#define LUA_MAXUNSIGNED ULONG_MAX
-
-#elif LUA_INT_TYPE == LUA_INT_LONGLONG /* }{ long long */
-
-/* use presence of macro LLONG_MAX as proxy for C99 compliance */
-#if defined(LLONG_MAX)                 /* { */
-/* use ISO C99 stuff */
-
-#define LUA_INTEGER        long long
-#define LUA_INTEGER_FRMLEN "ll"
-
-#define LUA_MAXINTEGER LLONG_MAX
-#define LUA_MININTEGER LLONG_MIN
-
-#define LUA_MAXUNSIGNED ULLONG_MAX
-
-#elif defined(LUA_USE_WINDOWS) /* }{ */
-/* in Windows, can use specific Windows types */
-
-#define LUA_INTEGER        __int64
-#define LUA_INTEGER_FRMLEN "I64"
-
-#define LUA_MAXINTEGER _I64_MAX
-#define LUA_MININTEGER _I64_MIN
-
-#define LUA_MAXUNSIGNED _UI64_MAX
-
-#else /* }{ */
-
-#error \
-    "Compiler does not support 'long long'. Use option '-DLUA_32BITS' \
-  or '-DLUA_C89_NUMBERS' (see file 'luaconf.h' for details)"
-
-#endif /* } */
-
-#else /* }{ */
-
-#error "numeric integer type not defined"
 
 #endif /* } */
 
@@ -757,7 +573,7 @@
 ** of a function in debug information.
 ** CHANGE it if you want a different size.
 */
-#define LUA_IDSIZE 60
+#define LUA_IDSIZE 24
 
 
 /*
